@@ -28,17 +28,9 @@ Snowflake-powered demo using NHTSA SaferCar vehicle safety crash test data. Incl
 │   └── nhtsa_semantic_model.yaml    # Cortex Analyst YAML model
 │
 ├── sql/                          # Snowsight workspace demo scripts
-│   ├── safecar/                  # SafeCar demo (setup → analytics → teardown)
-│   │   ├── 01_setup.sql
-│   │   ├── 02_analytics.sql
-│   │   └── 03_teardown.sql
-│   └── recall-demo/              # NHTSA Recall demo (medallion architecture)
-│       ├── 01_environment_setup.sql
-│       ├── 02_bronze_ingestion.sql
-│       ├── 03_silver_transformations.sql
-│       ├── 04_cortex_semantic_model_and_agent.sql
-│       ├── 05_customer_demo_script.sql
-│       └── 06_teardown.sql
+│   ├── 01_setup.sql              # Environment + table + stage + SPCS setup
+│   ├── 02_analytics.sql          # Create analytical views
+│   └── 03_teardown.sql           # Full cleanup
 ```
 
 ## Snowflake Objects

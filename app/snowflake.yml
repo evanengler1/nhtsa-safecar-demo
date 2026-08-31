@@ -1,0 +1,22 @@
+definition_version: "2"
+
+entities:
+  nhtsa_safecar:
+    type: snowflake-app
+    identifier:
+      name: NHTSA_SAFECAR
+      database: NHTSA_SAFECAR_DEMO
+      schema: SAFETY_DATA
+    artifacts:
+      - src: ./*
+        dest: ./
+        ignore:
+          - node_modules
+          - .env*
+          - .next
+          - .git
+          - snowflake.log
+          - output
+
+    query_warehouse: NHTSA_SAFECAR_WH
+    code_stage: NHTSA_SAFECAR_CODE

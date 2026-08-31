@@ -1,0 +1,281 @@
+name: NHTSA_SAFETY_SEMANTIC_VIEW
+description: >-
+  NHTSA Crashworthiness and Vehicle Safety Intelligence model. Contains crash test
+  star ratings, biomechanical injury metrics (HIC, chest deflection, rib deflection),
+  rollover risk factors, and advanced driver assistance system (ADAS) feature availability
+  for vehicles tested by NHTSA. Use this to answer questions about vehicle safety ratings,
+  crash test performance, injury risk metrics, and ADAS technology adoption.
+tables:
+  - name: RAW_SAFERCAR
+    base_table:
+      database: NHTSA_SAFECAR_DEMO
+      schema: SAFETY_DATA
+      table: RAW_SAFERCAR
+    description: >-
+      NHTSA New Car Assessment Program (NCAP) crashworthiness test results including
+      frontal, side, pole impact, and rollover resistance ratings plus ADAS features.
+    dimensions:
+      - name: MAKE
+        expr: MAKE
+        data_type: VARCHAR
+        description: Vehicle manufacturer name
+        synonyms:
+          - brand
+          - manufacturer
+          - automaker
+          - OEM
+      - name: MODEL
+        expr: MODEL
+        data_type: VARCHAR
+        description: Vehicle model name
+        synonyms:
+          - vehicle name
+          - car model
+          - nameplate
+      - name: MODEL_YR
+        expr: MODEL_YR
+        data_type: NUMBER
+        description: Model year of the vehicle
+        synonyms:
+          - year
+          - model year
+          - MY
+      - name: BODY_STYLE
+        expr: BODY_STYLE
+        data_type: VARCHAR
+        description: Vehicle body style (sedan, SUV, truck, etc.)
+        synonyms:
+          - body type
+          - segment
+          - form factor
+      - name: VEHICLE_TYPE
+        expr: VEHICLE_TYPE
+        data_type: VARCHAR
+        description: Vehicle type classification (passenger car, SUV, MPV, truck)
+        synonyms:
+          - class
+          - category
+          - vehicle class
+      - name: DRIVE_TRAIN
+        expr: DRIVE_TRAIN
+        data_type: VARCHAR
+        description: Drivetrain configuration (AWD, FWD, RWD, 4WD)
+        synonyms:
+          - drive type
+          - drivetrain
+          - all wheel drive
+          - front wheel drive
+          - rear wheel drive
+      - name: CRASH_IMMINENT_BRAKE
+        expr: CRASH_IMMINENT_BRAKE
+        data_type: VARCHAR
+        description: Crash Imminent Braking (CIB/AEB) system availability
+        synonyms:
+          - Crash Imminent Braking
+          - CIB
+          - automatic emergency braking
+          - AEB
+          - auto brake
+      - name: FRNT_COLLISION_WARNING
+        expr: FRNT_COLLISION_WARNING
+        data_type: VARCHAR
+        description: Forward Collision Warning system availability
+        synonyms:
+          - FCW
+          - forward collision alert
+          - front collision warning
+      - name: LANE_DEPARTURE_WARNING
+        expr: LANE_DEPARTURE_WARNING
+        data_type: VARCHAR
+        description: Lane Departure Warning system availability
+        synonyms:
+          - LDW
+          - lane keep
+          - lane alert
+          - lane departure
+      - name: ADAPTIVE_CRUISE_CONTROL
+        expr: ADAPTIVE_CRUISE_CONTROL
+        data_type: VARCHAR
+        description: Adaptive Cruise Control system availability
+        synonyms:
+          - ACC
+          - radar cruise
+          - smart cruise
+      - name: BLIND_SPOT_DETECTION
+        expr: BLIND_SPOT_DETECTION
+        data_type: VARCHAR
+        description: Blind Spot Detection system availability
+        synonyms:
+          - BSD
+          - blind spot monitor
+          - blind spot warning
+      - name: DYNAMIC_BRAKE_SUPPORT
+        expr: DYNAMIC_BRAKE_SUPPORT
+        data_type: VARCHAR
+        description: Dynamic Brake Support system availability
+        synonyms:
+          - DBS
+          - brake assist
+          - emergency brake assist
+      - name: NHTSA_ESC
+        expr: NHTSA_ESC
+        data_type: VARCHAR
+        description: Electronic Stability Control compliance
+        synonyms:
+          - ESC
+          - stability control
+          - traction control
+      - name: OVERALL_STARS
+        expr: OVERALL_STARS
+        data_type: VARCHAR
+        description: Overall NHTSA safety star rating (1-5 stars)
+        synonyms:
+          - overall rating
+          - safety rating
+          - star rating
+          - NCAP rating
+      - name: OVERALL_FRNT_STARS
+        expr: OVERALL_FRNT_STARS
+        data_type: VARCHAR
+        description: Overall frontal crash star rating
+        synonyms:
+          - frontal rating
+          - front crash rating
+          - frontal stars
+      - name: OVERALL_SIDE_STARS
+        expr: OVERALL_SIDE_STARS
+        data_type: VARCHAR
+        description: Overall side crash star rating
+        synonyms:
+          - side rating
+          - side crash rating
+          - side impact rating
+      - name: ROLLOVER_STARS
+        expr: ROLLOVER_STARS
+        data_type: VARCHAR
+        description: Rollover resistance star rating
+        synonyms:
+          - rollover rating
+          - tip rating
+          - rollover resistance
+      - name: FRNT_DRIV_STARS
+        expr: FRNT_DRIV_STARS
+        data_type: VARCHAR
+        description: Frontal crash driver star rating
+      - name: FRNT_PASS_STARS
+        expr: FRNT_PASS_STARS
+        data_type: VARCHAR
+        description: Frontal crash passenger star rating
+      - name: SIDE_DRIV_STARS
+        expr: SIDE_DRIV_STARS
+        data_type: VARCHAR
+        description: Side crash driver star rating
+      - name: SIDE_PASS_STARS
+        expr: SIDE_PASS_STARS
+        data_type: VARCHAR
+        description: Side crash passenger star rating
+      - name: SIDE_POLE_STARS
+        expr: SIDE_POLE_STARS
+        data_type: VARCHAR
+        description: Side pole impact star rating
+      - name: CURB_WEIGHT
+        expr: CURB_WEIGHT
+        data_type: VARCHAR
+        description: Vehicle curb weight in pounds
+        synonyms:
+          - weight
+          - vehicle weight
+          - mass
+    facts:
+      - name: HIC15_DRIV
+        expr: HIC15_DRIV
+        data_type: FLOAT
+        description: >-
+          Head Injury Criterion (15ms) for driver in frontal crash.
+          Values above 700 indicate heightened concussion risk.
+        synonyms:
+          - Head Injury Index
+          - head injury criteria
+          - HIC driver
+          - concussion risk score
+      - name: CHEST_DEFL_DRIV
+        expr: CHEST_DEFL_DRIV
+        data_type: FLOAT
+        description: Driver chest deflection in mm during frontal crash
+        synonyms:
+          - chest compression
+          - thorax deflection
+      - name: SIDE_HIC_36_DRIV
+        expr: SIDE_HIC_36_DRIV
+        data_type: FLOAT
+        description: Head Injury Criterion (36ms) for driver in side impact
+        synonyms:
+          - side head injury
+          - side HIC
+      - name: RIB_DEFLECTION_DRIV
+        expr: RIB_DEFLECTION_DRIV
+        data_type: FLOAT
+        description: Driver rib deflection in mm during side impact
+        synonyms:
+          - rib compression
+          - thorax side deflection
+      - name: POLE_HIC_36_DRIV
+        expr: POLE_HIC_36_DRIV
+        data_type: FLOAT
+        description: Head Injury Criterion (36ms) for driver in side pole impact
+        synonyms:
+          - pole head injury
+          - pole HIC
+      - name: ROLLOVER_POSSIBILITY
+        expr: ROLLOVER_POSSIBILITY
+        data_type: FLOAT
+        description: Probability of rollover in a single-vehicle crash (percentage)
+        synonyms:
+          - rollover probability
+          - tip probability
+          - rollover chance
+      - name: STATIC_STABI_FACTOR
+        expr: STATIC_STABI_FACTOR
+        data_type: FLOAT
+        description: >-
+          Static Stability Factor - ratio of half-track-width to CG height.
+          Lower values indicate higher rollover risk.
+        synonyms:
+          - SSF
+          - stability factor
+          - Rollover Risk
+          - rollover risk factor
+verified_queries:
+  - name: suv_5star_no_aeb
+    question: Which SUVs have 5-star safety ratings but lack Automatic Emergency Braking?
+    sql: >-
+      SELECT MAKE, MODEL, MODEL_YR, OVERALL_STARS, CRASH_IMMINENT_BRAKE
+      FROM NHTSA_SAFECAR_DEMO.SAFETY_DATA.RAW_SAFERCAR
+      WHERE BODY_STYLE = 'SUV'
+      AND TRY_TO_NUMBER(OVERALL_STARS) = 5
+      AND (CRASH_IMMINENT_BRAKE IS NULL OR TRIM(CRASH_IMMINENT_BRAKE) = '')
+    verified_at: 1787596997
+    verified_by: SYSADMIN
+  - name: hic15_awd_vs_fwd_mpv
+    question: Compare the average driver head injury criteria (HIC15) between AWD and FWD MPVs.
+    sql: >-
+      SELECT DRIVE_TRAIN, AVG(HIC15_DRIV) AS AVG_HIC15
+      FROM NHTSA_SAFECAR_DEMO.SAFETY_DATA.RAW_SAFERCAR
+      WHERE VEHICLE_TYPE = 'MPV'
+      AND DRIVE_TRAIN IN ('AWD', 'FWD')
+      AND HIC15_DRIV IS NOT NULL
+      GROUP BY DRIVE_TRAIN
+      ORDER BY AVG_HIC15 DESC
+    verified_at: 1787596997
+    verified_by: SYSADMIN
+  - name: rollover_risk_by_vehicle_type
+    question: What is the average rollover risk by vehicle type?
+    sql: >-
+      SELECT VEHICLE_TYPE, AVG(ROLLOVER_POSSIBILITY) AS AVG_ROLLOVER_RISK,
+      AVG(STATIC_STABI_FACTOR) AS AVG_SSF
+      FROM NHTSA_SAFECAR_DEMO.SAFETY_DATA.RAW_SAFERCAR
+      WHERE ROLLOVER_POSSIBILITY IS NOT NULL
+      GROUP BY VEHICLE_TYPE
+      ORDER BY AVG_ROLLOVER_RISK DESC
+    verified_at: 1787596997
+    verified_by: SYSADMIN

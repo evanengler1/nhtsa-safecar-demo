@@ -1,0 +1,11 @@
+install:
+  commands:
+    - ["npm", "ci", "--include=dev"]
+
+run:
+  command: ["node", ".next/standalone/server.js"]
+
+profile:
+  label: "NHTSA Fleet Safety Dashboard"
+  description: "Vehicle safety ratings, ADAS adoption, and crash test analysis across 64 makers and 17,000+ vehicles."
+  icon: public/icon.svg

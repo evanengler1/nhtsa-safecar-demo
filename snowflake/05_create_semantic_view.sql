@@ -1,9 +1,9 @@
 -- ============================================================================
--- NHTSA SafeCar Demo — Semantic View
+-- NHTSA SafeCar Demo — Step 5: Create Semantic View
 -- ============================================================================
 
-USE DATABASE NHTSA_SAFECAR_DEMO;
-USE SCHEMA SAFETY_DATA;
+USE WAREHOUSE NHTSA_SAFECAR_WH;
+USE SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA;
 
 CREATE OR REPLACE SEMANTIC VIEW SAFECAR_SAFETY_RATINGS
 	TABLES (

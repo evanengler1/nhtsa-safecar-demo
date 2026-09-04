@@ -1,27 +1,31 @@
--- Setup script for NHTSA SaferCar demo: infrastructure, table DDL, and data loading
--- Co-authored with CoCo
-/*=============================================================================
-  NHTSA Fleet Safety & Crashworthiness Intelligence Portal
-  01_setup.sql — Infrastructure Setup & Data Loading
-=============================================================================*/
+-- ============================================================================
+-- NHTSA SafeCar Demo — Step 1: Setup
+-- ============================================================================
+-- Creates all the infrastructure needed for this demo:
+--   - Warehouse, Database, Schema
+--   - File format and internal stage for CSV loading
+--   - The RAW_SAFERCAR table (128 columns)
+--
+-- Run this entire script in Snowsight (or SnowSQL) as SYSADMIN.
+-- ============================================================================
 
 USE ROLE SYSADMIN;
 
--- Warehouse
+-- 1. Warehouse
 CREATE OR REPLACE WAREHOUSE NHTSA_SAFECAR_WH
   WITH WAREHOUSE_SIZE = 'XSMALL'
   AUTO_SUSPEND = 60
   AUTO_RESUME = TRUE
   INITIALLY_SUSPENDED = TRUE;
 
--- Database & Schema
+-- 2. Database and Schema
 CREATE OR REPLACE DATABASE NHTSA_SAFECAR_DEMO;
 CREATE OR REPLACE SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA;
 
 USE WAREHOUSE NHTSA_SAFECAR_WH;
 USE SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA;
 
--- File format for CSV with quoted fields containing commas
+-- 3. File format for the CSV (handles quoted fields with commas)
 CREATE OR REPLACE FILE FORMAT CSV_SAFERCAR
   TYPE = 'CSV'
   FIELD_OPTIONALLY_ENCLOSED_BY = '"'
@@ -30,14 +34,13 @@ CREATE OR REPLACE FILE FORMAT CSV_SAFERCAR
   EMPTY_FIELD_AS_NULL = TRUE
   TRIM_SPACE = TRUE;
 
--- Internal stage for raw data
+-- 4. Internal stage for uploading the CSV
 CREATE OR REPLACE STAGE RAW_STAGE
   FILE_FORMAT = CSV_SAFERCAR;
 
--- Raw table matching all 128 columns from the NHTSA data dictionary
--- Column sizes derived from actual CSV max lengths + buffer
+-- 5. Table matching all 128 columns from the NHTSA data dictionary
 CREATE OR REPLACE TABLE RAW_SAFERCAR (
-    -- Vehicle metadata (fields 1-12)
+    -- Vehicle metadata
     MAKE                           VARCHAR(20),
     MODEL                          VARCHAR(50),
     MODEL_YR                       NUMBER,
@@ -51,11 +54,11 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     SEAT_LOC                       VARCHAR(150),
     SEAT_LOC_COMMENTS              VARCHAR(130),
 
-    -- Weight (fields 13-14)
+    -- Weight
     MIN_GROSS_WEIGHT               NUMBER,
     MAX_GROSS_WEIGHT               NUMBER,
 
-    -- Seat belt systems (fields 15-24)
+    -- Seat belt systems
     UPPER_BELT_ANCHORAGE           VARCHAR(16),
     UPPER_BELT_ANCHORAGE_LOC       VARCHAR(40),
     SEAT_BELT_PRETENSIONER         VARCHAR(16),
@@ -67,7 +70,7 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     REAR_BELT_INDICATOR            VARCHAR(16),
     LATCH_REAR_POSITION            VARCHAR(60),
 
-    -- Head side air bag (fields 25-30)
+    -- Head side air bag
     HEAD_SAB                       VARCHAR(100),
     HEAD_SAB_TYPE                  VARCHAR(20),
     HEAD_SAB_LOC                   VARCHAR(40),
@@ -75,23 +78,23 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     HEAD_SAB_MEET_REQUIREMENTS     VARCHAR(70),
     HEAD_SAB_DEPLOY_IN_ROLLOVER    VARCHAR(16),
 
-    -- Torso side air bag (fields 31-34)
+    -- Torso side air bag
     TORSO_SAB                      VARCHAR(40),
     TORSO_SAB_TYPE                 VARCHAR(40),
     TORSO_SAB_LOC                  VARCHAR(16),
     TORSO_SAB_MOUNT_LOC            VARCHAR(40),
 
-    -- Knee bolsters (fields 35-36)
+    -- Knee bolsters
     KNEE_BOLSTERS                  VARCHAR(16),
     KNEE_BOLSTERS_LOC              VARCHAR(16),
 
-    -- Misc safety (fields 37-40)
+    -- Misc safety
     ADL                            VARCHAR(35),
     HEAD_RESTRAINT_IND             VARCHAR(50),
     DYNAMIC_HEAD_RESTRAINT_IND     VARCHAR(16),
     BETI                           VARCHAR(16),
 
-    -- ADAS & active safety (fields 41-63)
+    -- ADAS & active safety
     BLIND_SPOT_DETECTION           VARCHAR(60),
     DAY_RUN_LIGHTS                 VARCHAR(80),
     ADAPTIVE_CRUISE_CONTROL        VARCHAR(60),
@@ -116,16 +119,16 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     NHTSA_DBS_EVALUATION           VARCHAR(50),
     NHTSA_ESC                      VARCHAR(16),
 
-    -- Pelvis side air bag (fields 64-67)
+    -- Pelvis side air bag
     PELVIS_SAB                     VARCHAR(30),
     PELVIS_SAB_TYPE                VARCHAR(16),
     PELVIS_SAB_LOC                 VARCHAR(16),
     PELVIS_SAB_MOUNT_LOC           VARCHAR(16),
 
-    -- Overall rating (field 68)
+    -- Overall rating
     OVERALL_STARS                  VARCHAR(5),
 
-    -- Frontal impact (fields 69-93)
+    -- Frontal impact
     FRNT_TEST_NO                   NUMBER,
     FRNT_VIN                       VARCHAR(17),
     FRNT_DRIV_STARS                VARCHAR(5),
@@ -152,7 +155,7 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     NECK_TENS_PASS                 FLOAT,
     NET_COMP_PASS                  FLOAT,
 
-    -- Side impact (fields 94-112)
+    -- Side impact
     SIDE_TEST_NO                   NUMBER,
     SIDE_VIN                       VARCHAR(17),
     SIDE_DRIV_STARS                VARCHAR(5),
@@ -173,7 +176,7 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     SIDE_HIC_36_PASS               FLOAT,
     PELVIC_FORCE_PASS              FLOAT,
 
-    -- Pole impact (fields 113-120)
+    -- Pole impact
     POLE_TEST_NO                   NUMBER,
     POLE_VIN                       VARCHAR(17),
     SIDE_POLE_STARS                VARCHAR(5),
@@ -183,7 +186,7 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     POLE_HIC_36_DRIV               FLOAT,
     PELVIC_FORCE                   FLOAT,
 
-    -- Rollover (fields 121-126)
+    -- Rollover
     ROLLOVER_POSSIBILITY           FLOAT,
     STATIC_STABI_FACTOR            FLOAT,
     TIP                            VARCHAR(10),
@@ -191,41 +194,7 @@ CREATE OR REPLACE TABLE RAW_SAFERCAR (
     ROLL_FOOT_NOTES                VARCHAR(130),
     ROLLOVER_STARS                 VARCHAR(5),
 
-    -- Backup camera (fields 127-128)
+    -- Backup camera
     NHTSA_BACKUP_CAMERA            VARCHAR(16),
     BACKUP_CAMERA                  VARCHAR(16)
 );
-
--- Load data: first PUT the file to stage, then COPY INTO the table
--- Run from SnowSQL or Snowsight:
---   PUT file:///path/to/Safercar_data.csv @RAW_STAGE AUTO_COMPRESS=TRUE;
-COPY INTO RAW_SAFERCAR
-  FROM @RAW_STAGE/Safercar_data.csv
-  FILE_FORMAT = CSV_SAFERCAR
-  ON_ERROR = 'ABORT_STATEMENT';
-
-/*=============================================================================
-  SPCS Infrastructure
-=============================================================================*/
-
-USE ROLE ACCOUNTADMIN;
-
--- Compute pool for the containerized app
-CREATE COMPUTE POOL IF NOT EXISTS NHTSA_SAFECAR_COMPUTE_POOL
-  MIN_NODES = 1
-  MAX_NODES = 1
-  INSTANCE_FAMILY = CPU_X64_XS;
-
--- Image repository to store Docker images
-CREATE IMAGE REPOSITORY IF NOT EXISTS NHTSA_SAFECAR_DEMO.SAFETY_DATA.NHTSA_REPO;
-
--- Service role for SPCS to query views
-CREATE ROLE IF NOT EXISTS NHTSA_SERVICE_ROLE;
-GRANT USAGE ON WAREHOUSE NHTSA_SAFECAR_WH TO ROLE NHTSA_SERVICE_ROLE;
-GRANT USAGE ON DATABASE NHTSA_SAFECAR_DEMO TO ROLE NHTSA_SERVICE_ROLE;
-GRANT USAGE ON SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA TO ROLE NHTSA_SERVICE_ROLE;
-GRANT SELECT ON ALL VIEWS IN SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA TO ROLE NHTSA_SERVICE_ROLE;
-GRANT SELECT ON ALL TABLES IN SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA TO ROLE NHTSA_SERVICE_ROLE;
-
--- Verify row count
-SELECT COUNT(*) AS row_count FROM RAW_SAFERCAR;

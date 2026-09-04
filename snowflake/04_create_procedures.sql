@@ -1,9 +1,9 @@
 -- ============================================================================
--- NHTSA SafeCar Demo — Stored Procedures
+-- NHTSA SafeCar Demo — Step 4: Create Stored Procedures
 -- ============================================================================
 
-USE DATABASE NHTSA_SAFECAR_DEMO;
-USE SCHEMA SAFETY_DATA;
+USE WAREHOUSE NHTSA_SAFECAR_WH;
+USE SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA;
 
 -- ADAS technology adoption lookup
 CREATE OR REPLACE PROCEDURE SP_ADAS_TECH_ADOPTION(

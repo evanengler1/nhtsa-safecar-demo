@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+from snowflake.core import Root
 
 st.set_page_config(page_title="NHTSA SafeCar Analytics", page_icon="🚗", layout="wide")
 
@@ -352,39 +353,35 @@ with tab4:
 
         filter_obj = {}
         if selected_makes:
-            filter_obj["@in"] = {"MAKE": selected_makes}
-
-        filter_json = json.dumps(filter_obj) if filter_obj else "{}"
-
-        search_sql = f"""
-        SELECT
-            VEHICLE_ID,
-            MAKE,
-            MODEL,
-            MODEL_YR,
-            BODY_STYLE,
-            COMBINED_SAFETY_NOTES
-        FROM TABLE(
-            {DATABASE}.{SCHEMA}.NHTSA_SAFETY_NOTES_INDEX!SEARCH(
-                QUERY => '{query.replace("'", "''")}',
-                COLUMNS => ['VEHICLE_ID','MAKE','MODEL','MODEL_YR','BODY_STYLE','COMBINED_SAFETY_NOTES'],
-                FILTER => PARSE_JSON('{filter_json}'),
-                LIMIT => {search_limit}
-            )
-        )
-        """
+            filter_obj["@or"] = [{"@eq": {"MAKE": m}} for m in selected_makes]
 
         try:
-            results = run_query(search_sql)
-            if results.empty:
+            root = Root(session)
+            search_service = (
+                root.databases[DATABASE]
+                .schemas[SCHEMA]
+                .cortex_search_services["NHTSA_SAFETY_NOTES_INDEX"]
+            )
+
+            resp = search_service.search(
+                query=query,
+                columns=["VEHICLE_ID", "MAKE", "MODEL", "MODEL_YR", "BODY_STYLE", "COMBINED_SAFETY_NOTES"],
+                filter=filter_obj if filter_obj else None,
+                limit=search_limit,
+            )
+
+            results = resp.results
+            if not results:
                 st.warning("No results found. Try a different search term.")
             else:
                 st.success(f"Found {len(results)} results")
-                for _, row in results.iterrows():
+                for row in results:
+                    yr = row.get("MODEL_YR", "")
+                    yr_str = str(int(yr)) if yr else ""
                     with st.expander(
-                        f"{row['MAKE']} {row['MODEL']} ({int(row['MODEL_YR'])}) — {row['BODY_STYLE']}"
+                        f"{row.get('MAKE', '')} {row.get('MODEL', '')} ({yr_str}) — {row.get('BODY_STYLE', '')}"
                     ):
-                        st.markdown(row["COMBINED_SAFETY_NOTES"])
+                        st.markdown(row.get("COMBINED_SAFETY_NOTES", ""))
         except Exception as e:
             st.error(f"Search error: {e}")
     else:

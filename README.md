@@ -131,4 +131,4 @@ data/                             Source data
 
 ## Data Source
 
-[NHTSA SaferCar API](https://www.nhtsa.gov/nhtsa-safercar) — vehicle safety ratings from the National Highway Traffic Safety Administration.
+[NHTSA New Car Assessment Program (NCAP) Data](https://www.nhtsa.gov/ratings/resources-related-nhtsas-new-car-assessment-program#data) — vehicle safety ratings from the National Highway Traffic Safety Administration.

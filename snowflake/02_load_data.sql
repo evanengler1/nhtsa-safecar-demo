@@ -1,12 +1,14 @@
 -- ============================================================================
 -- NHTSA SafeCar Demo — Step 2: Load Data
 -- ============================================================================
--- Before running this script, upload the CSV to the stage using the
--- Snowflake CLI from the root of this repo:
+-- Before running this script, upload the CSV to the stage:
 --
---   snow stage copy data/Safercar_data.csv @NHTSA_SAFECAR_DEMO.SAFETY_DATA.RAW_STAGE -c <connection_name>
+--   1. In Snowsight, go to: Data > Databases > NHTSA_SAFECAR_DEMO >
+--      SAFETY_DATA > Stages > RAW_STAGE
+--   2. Click the "+ Files" button (top right)
+--   3. Upload the data/Safercar_data.csv file from this repo
 --
--- Then run this script in Snowsight to load the data into the table.
+-- Then run this script to load the data into the table.
 -- ============================================================================
 
 USE WAREHOUSE NHTSA_SAFECAR_WH;

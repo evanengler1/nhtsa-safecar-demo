@@ -16,7 +16,7 @@ A Snowflake demo that loads NHTSA vehicle crash test data and builds analytics o
 ## Prerequisites
 
 1. **A Snowflake account** — any edition works. You need a role with `SYSADMIN` privileges.
-2. **Snowflake CLI (`snow`)** — used to upload the data file and deploy the Streamlit app.
+2. **Snowflake CLI (`snow`)** — only needed for the Streamlit app deployment (Step 7). Steps 1-6 use Snowsight only.
    - Install: https://docs.snowflake.com/en/developer-guide/snowflake-cli/installation/installation
    - Configure a connection: `snow connection add` (follow the prompts)
    - Test it: `snow connection test -c <connection_name>`
@@ -37,11 +37,11 @@ This creates:
 
 ### Step 2: Upload and load the data
 
-First, upload the CSV file to the Snowflake stage using the CLI. From the root of this repo:
+Upload the CSV file to the Snowflake stage through Snowsight:
 
-```bash
-snow stage copy data/Safercar_data.csv @NHTSA_SAFECAR_DEMO.SAFETY_DATA.RAW_STAGE -c <connection_name>
-```
+1. In the left sidebar, navigate to **Data > Databases > NHTSA_SAFECAR_DEMO > SAFETY_DATA > Stages > RAW_STAGE**
+2. Click the **"+ Files"** button in the top right
+3. Upload the `data/Safercar_data.csv` file from this repo
 
 Then open `snowflake/02_load_data.sql` in Snowsight and run it. This loads the CSV into the table and shows a row count to confirm it worked (expect ~17,000 rows).
 

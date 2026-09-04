@@ -255,23 +255,25 @@ with tab3:
     col_a, col_b = st.columns(2)
 
     with col_a:
-        st.subheader("Curb Weight vs Rollover Probability")
-        scatter_df = risk_df.dropna(subset=["CURB_WEIGHT_LBS", "ROLLOVER_POSSIBILITY"])
-        if not scatter_df.empty:
-            fig4 = px.scatter(
-                scatter_df,
-                x="CURB_WEIGHT_LBS",
-                y="ROLLOVER_POSSIBILITY",
-                color="ROLLOVER_STARS",
-                hover_data=["MAKE", "MODEL", "MODEL_YR"],
-                labels={
-                    "CURB_WEIGHT_LBS": "Curb Weight (lbs)",
-                    "ROLLOVER_POSSIBILITY": "Rollover Probability (%)",
-                    "ROLLOVER_STARS": "Rollover Stars",
-                },
-                color_continuous_scale="RdYlGn_r",
+        st.subheader("Avg Rollover Probability by Body Style")
+        rollover_df = risk_df.dropna(subset=["ROLLOVER_POSSIBILITY"])
+        if not rollover_df.empty:
+            rollover_agg = (
+                rollover_df.groupby("BODY_STYLE")["ROLLOVER_POSSIBILITY"]
+                .mean()
+                .reset_index()
+                .sort_values("ROLLOVER_POSSIBILITY", ascending=False)
+                .head(15)
             )
-            fig4.update_layout(height=400)
+            fig4 = px.bar(
+                rollover_agg,
+                x="BODY_STYLE",
+                y="ROLLOVER_POSSIBILITY",
+                labels={"BODY_STYLE": "Body Style", "ROLLOVER_POSSIBILITY": "Avg Rollover Prob (%)"},
+                color="ROLLOVER_POSSIBILITY",
+                color_continuous_scale="Oranges",
+            )
+            fig4.update_layout(height=400, xaxis_tickangle=-45)
             st.plotly_chart(fig4, use_container_width=True)
         else:
             st.info("No data available for the selected filters.")

@@ -16,10 +16,8 @@ A Snowflake demo that loads NHTSA vehicle crash test data and builds analytics o
 ## Prerequisites
 
 1. **A Snowflake account** — any edition works. You need a role with `SYSADMIN` privileges.
-2. **Snowflake CLI (`snow`)** — only needed for the Streamlit app deployment (Step 7). Steps 1-6 use Snowsight only.
-   - Install: https://docs.snowflake.com/en/developer-guide/snowflake-cli/installation/installation
-   - Configure a connection: `snow connection add` (follow the prompts)
-   - Test it: `snow connection test -c <connection_name>`
+
+Everything is done through [Snowsight](https://app.snowflake.com) (the Snowflake web UI). No CLI or local tools required.
 
 ## Setup (Step by Step)
 
@@ -77,16 +75,17 @@ Open `snowflake/06_create_cortex_search.sql` in Snowsight and run it.
 
 This creates a search service (`NHTSA_SAFETY_NOTES_INDEX`) over the crash test safety notes, enabling natural language search from the Streamlit app.
 
-### Step 7: Deploy the Streamlit app
+### Step 7: Create the Streamlit app
 
-From the root of this repo:
+1. In Snowsight, go to **Projects > Streamlit** and click **"+ Streamlit App"**
+2. Set the app name to `NHTSA_SAFECAR_ANALYTICS`
+3. Choose database `NHTSA_SAFECAR_DEMO`, schema `SAFETY_DATA`, and warehouse `NHTSA_SAFECAR_WH`
+4. Click **Create** — this opens the Streamlit editor
+5. Replace the sample code with the contents of `streamlit/streamlit_app.py` from this repo
+6. In the editor, click the **Packages** icon (left sidebar) and add: `plotly`
+7. Click **Run** to start the app
 
-```bash
-cd streamlit
-snow streamlit deploy nhtsa_safecar_analytics -c <connection_name> --replace
-```
-
-Then open `snowflake/07_deploy_streamlit.sql` in Snowsight and run it to verify everything is in place.
+You can also open `snowflake/07_deploy_streamlit.sql` in Snowsight to verify all prerequisite objects exist.
 
 The Streamlit app has four tabs:
 

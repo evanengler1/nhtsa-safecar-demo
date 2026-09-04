@@ -1,14 +1,17 @@
 -- ============================================================================
--- NHTSA SafeCar Demo — Step 7: Deploy Streamlit App
+-- NHTSA SafeCar Demo — Step 7: Create Streamlit App
 -- ============================================================================
--- The Streamlit app is deployed using the Snowflake CLI.
+-- Create the Streamlit app directly in Snowsight:
 --
--- From the root of this repo, run:
+--   1. Go to Projects > Streamlit > + Streamlit App
+--   2. Name: NHTSA_SAFECAR_ANALYTICS
+--   3. Database: NHTSA_SAFECAR_DEMO, Schema: SAFETY_DATA,
+--      Warehouse: NHTSA_SAFECAR_WH
+--   4. Click Create, then paste the contents of streamlit/streamlit_app.py
+--   5. Add the "plotly" package via the Packages icon in the left sidebar
+--   6. Click Run
 --
---   cd streamlit
---   snow streamlit deploy nhtsa_safecar_analytics -c <connection_name> --replace
---
--- After deploying, run this script to verify it's running.
+-- Run this script to verify all prerequisite objects exist.
 -- ============================================================================
 
 USE WAREHOUSE NHTSA_SAFECAR_WH;
@@ -27,7 +30,3 @@ SELECT 'V_SAFETY_NOTES_SEARCHABLE', COUNT(*) FROM V_SAFETY_NOTES_SEARCHABLE;
 
 -- Verify the Streamlit app is deployed
 SHOW STREAMLITS LIKE 'NHTSA_SAFECAR_ANALYTICS' IN SCHEMA NHTSA_SAFECAR_DEMO.SAFETY_DATA;
-
--- (Optional) Grant access to other roles
--- GRANT USAGE ON STREAMLIT NHTSA_SAFECAR_DEMO.SAFETY_DATA.NHTSA_SAFECAR_ANALYTICS
---     TO ROLE <role_name>;

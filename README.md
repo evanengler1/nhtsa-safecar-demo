@@ -15,6 +15,10 @@ Snowflake-powered demo using NHTSA SaferCar vehicle safety crash test data. Incl
 │   ├── app.yml                   # SPCS app manifest
 │   └── snowflake.yml             # Snowflake CLI project config
 │
+├── streamlit/                    # Streamlit-in-Snowflake analytics app
+│   ├── streamlit_app.py          # Multi-tab app (ratings, ADAS, risk, AI search)
+│   └── snowflake.yml             # SiS deployment manifest
+│
 ├── data/                         # Source data
 │   ├── Safercar_data.csv         # NHTSA SaferCar raw data (~17K vehicles)
 │   └── Safercar_data_READ_ME_file.txt  # Data dictionary (128 fields)
@@ -25,6 +29,7 @@ Snowflake-powered demo using NHTSA SaferCar vehicle safety crash test data. Incl
 │   ├── 03_create_procedures.sql  # Stored procedures (4 SPs)
 │   ├── 04_create_semantic_view.sql  # Cortex AI semantic view + VQRs
 │   ├── 05_create_cortex_search.sql  # Cortex Search service
+│   ├── 06_create_streamlit.sql      # Streamlit deployment notes + prereq check
 │   └── nhtsa_semantic_model.yaml    # Cortex Analyst YAML model
 │
 ├── sql/                          # Snowsight workspace demo scripts
@@ -44,6 +49,7 @@ Snowflake-powered demo using NHTSA SaferCar vehicle safety crash test data. Incl
 | `V_SAFETY_NOTES_SEARCHABLE` | View | Concatenated safety notes for search |
 | `SAFECAR_SAFETY_RATINGS` | Semantic View | Cortex AI semantic layer with 5 VQRs |
 | `NHTSA_SAFETY_NOTES_INDEX` | Cortex Search | Natural-language search over safety notes |
+| `NHTSA_SAFECAR_ANALYTICS` | Streamlit App | Interactive safety analytics dashboard |
 | `SP_SAFETY_RATINGS_LOOKUP` | Procedure | Look up ratings by make/model/year |
 | `SP_SAFETY_SUMMARY_BY_MAKE` | Procedure | Summary stats by manufacturer |
 | `SP_ADAS_TECH_ADOPTION` | Procedure | ADAS adoption trends |
@@ -54,6 +60,20 @@ Snowflake-powered demo using NHTSA SaferCar vehicle safety crash test data. Incl
 1. Run `snowflake/01_create_table.sql` through `05_create_cortex_search.sql` in order
 2. Load `data/Safercar_data.csv` into the `RAW_SAFERCAR` table
 3. Deploy the Next.js app: `cd app && snow app deploy`
+4. Deploy the Streamlit app: `cd streamlit && snow streamlit deploy nhtsa_safecar_analytics -c <connection> --replace`
+
+## Streamlit App
+
+The `streamlit/` directory contains a Streamlit-in-Snowflake analytics app with four tabs:
+
+| Tab | Description |
+|-----|-------------|
+| Safety Ratings | Filterable star-rating dashboard with KPIs and distribution charts |
+| ADAS Adoption | Line charts showing safety technology adoption trends over model years |
+| Crash Risk Analysis | Scatter plots and bar charts of biomechanical crash injury metrics |
+| AI Safety Search | Natural-language search over crash test safety notes via Cortex Search |
+
+Sidebar filters (manufacturer, model year range) apply across all tabs. The app connects via `st.connection("snowflake")` using native SiS embedded identity — no credentials needed.
 
 ## Data Source
 
